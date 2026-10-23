@@ -14,7 +14,8 @@ class $modify(LevelInfoLayer) {
         if (!LevelInfoLayer::init(level, challenge)) return false;
         if (!Mod::get()->getSettingValue<bool>("enabled")) return true;
         if (!level -> m_levelID) return true;
-        if (m_level->m_demonDifficulty < 5) return true;
+        if (m_level->m_demon.value() < 1) return true;
+        if (m_level->m_demonDifficulty < 5) return true; // easier than insane demon
 
         const auto creatorInfoMenu{this->getChildByID("creator-info-menu")};
 
