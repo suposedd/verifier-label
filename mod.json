@@ -9,6 +9,24 @@
 	"id": "suposed.verifier-label",
 	"name": "Verifier Label",
 	"version": "v1.0.0",
+	"settings":{
+		"mod-title": {
+			"type": "title",
+			"name": "Verifier Label Settings"
+		},
+		"enabled": {
+			"type": "bool",
+			"name": "Enabled",
+			"description": "Enable/disable mod's functionality",
+			"default": true
+		},
+		"y-offset": {
+			"type": "float",
+			"name": "Y Offset",
+			"description": "Label's offset on Y axis",
+			"default": 3.0
+		}
+	},
 	"developer": "suposed",
 	"description": "",
 	"dependencies": {
