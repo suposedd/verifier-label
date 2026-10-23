@@ -38,12 +38,14 @@ class $modify(LevelInfoLayer) {
             return true;
         }
 
+        auto scale{Mod::get()->getSettingValue<float>("scale")};
+        auto yoffset{Mod::get()->getSettingValue<float>("y-offset")};
+        auto xoffset{Mod::get()->getSettingValue<float>("x-offset")};
+
         verifierLabel->setID("verifier-name_spr");
-        verifierLabel->setScale(0.45);
+        verifierLabel->setScale(scale);
 
-        auto offset{Mod::get()->getSettingValue<float>("y-offset")};
-
-        verifierLabel->setPosition(creatorName->getPositionX(), creatorName->getPositionY() - creatorName->getContentHeight() + offset);
+        verifierLabel->setPosition(creatorName->getPositionX() + xoffset, creatorName->getPositionY() - creatorName->getContentHeight() + yoffset);
         m_fields->m_label = verifierLabel;
 
         creatorInfoMenu->addChild(verifierLabel);

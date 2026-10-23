@@ -12,7 +12,7 @@
 	"settings":{
 		"mod-title": {
 			"type": "title",
-			"name": "Verifier Label Settings"
+			"name": "General Settings"
 		},
 		"enabled": {
 			"type": "bool",
@@ -20,11 +20,29 @@
 			"description": "Enable/disable mod's functionality",
 			"default": true
 		},
+		"x-offset": {
+			"type": "float",
+			"name": "X Offset",
+			"description": "Label's offset on X axis",
+			"min": -30,
+			"max": 30,
+			"default": 0
+		},
 		"y-offset": {
 			"type": "float",
 			"name": "Y Offset",
 			"description": "Label's offset on Y axis",
-			"default": 3.0
+			"min": -10,
+			"max": 10,
+			"default": 3
+		},
+		"scale": {
+			"type": "float",
+			"name": "Label Scale",
+			"description": "Verifier label's size",
+			"min": 0.1,
+			"max": 1,
+			"default": 0.45
 		}
 	},
 	"developer": "suposed",
