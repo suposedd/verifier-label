@@ -25,6 +25,10 @@ class $modify(LevelInfoLayer) {
 
         m_fields->m_label = buildLabel(this);
 
+        if (!m_fields->m_label) {
+            return true;
+        }
+
         auto webReq = web::WebRequest();
         std::string url = fmt::format("https://api.aredl.net/v2/api/aredl/levels/{}", level->m_levelID);
 
