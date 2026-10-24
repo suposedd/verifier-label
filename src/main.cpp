@@ -2,6 +2,8 @@
 #include <Geode/modify/LevelInfoLayer.hpp>
 #include <Geode/utils/web.hpp>
 
+#include "label.hpp"
+
 using namespace geode::prelude;
 
 class $modify(LevelInfoLayer) {
@@ -16,47 +18,18 @@ class $modify(LevelInfoLayer) {
         if (!Mod::get()->getSettingValue<bool>("enabled")) return true;
         if (!level->m_levelID) return true;
         if (m_level->m_demon.value() < 1) return true;
-        if (m_level->m_demonDifficulty < 5) return true; // easier than insane demon
+        if (m_level->m_demonDifficulty < 5) return true;
 
         const auto creatorInfoMenu{this->getChildByID("creator-info-menu")};
-
-        if (!creatorInfoMenu) {
-            log::warn("Could not find creator-info-menu");
-            return true;
-        }
-
-        const auto creatorName{creatorInfoMenu->getChildByID("creator-name")};
-
-        if (!creatorName) {
-            log::warn("Creator name label was not found");
-            return true;
-        }
-
-        const auto verifierName{CCLabelBMFont::create(". . .", "goldFont.fnt")};
-
-        if (!verifierName) {
-            log::warn("Failed to create the verifier label");
-            return true;
-        }
-
         auto scale{Mod::get()->getSettingValue<float>("scale")};
-        auto yoffset{Mod::get()->getSettingValue<float>("y-offset")};
-        auto xoffset{Mod::get()->getSettingValue<float>("x-offset")};
 
-        verifierName->setID("verifier-name_spr");
-        verifierName->setScale(scale);
-
-        verifierName->setPosition(creatorName->getPositionX() + xoffset,
-                                  creatorName->getPositionY() - creatorName->getContentHeight() + yoffset);
-        m_fields->m_label = verifierName;
-
-        creatorInfoMenu->addChild(verifierName);
+        m_fields->m_label = buildLabel(this);
 
         auto webReq = web::WebRequest();
         std::string url = fmt::format("https://api.aredl.net/v2/api/aredl/levels/{}", level->m_levelID);
 
         m_fields->m_listener.spawn(
-            webReq.get(url), [this, scale, verifierName, creatorInfoMenu](const web::WebResponse &res) {
+            webReq.get(url), [this, scale, creatorInfoMenu](const web::WebResponse &res) {
                 int status{res.code()};
                 if (status == 200) {
                     auto data{res.json()};
@@ -88,8 +61,8 @@ class $modify(LevelInfoLayer) {
                         }
 
                         ytButton->setPosition(
-                            verifierName->getPositionX() + verifierName->getContentWidth() * scale / 2 + 10,
-                            verifierName->getPositionY());
+                            m_fields->m_label->getPositionX() + m_fields->m_label->getContentWidth() * scale / 2 + 10,
+                            m_fields->m_label->getPositionY());
 
                         creatorInfoMenu->addChild(ytButton);
                     }
