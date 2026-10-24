@@ -10,7 +10,6 @@ class $modify(LevelInfoLayer) {
     struct Fields {
         TaskHolder<web::WebResponse> m_listener;
         CCLabelBMFont *m_label{nullptr};
-        std::string m_videoURL{};
     };
 
     bool init(GJGameLevel *level, bool challenge) {
@@ -20,10 +19,9 @@ class $modify(LevelInfoLayer) {
         if (m_level->m_demon.value() < 1) return true;
         if (m_level->m_demonDifficulty < 5) return true;
 
-        const auto creatorInfoMenu{this->getChildByID("creator-info-menu")};
-        auto scale{Mod::get()->getSettingValue<float>("scale")};
+        auto creatorInfoMenu{this->getChildByID("creator-info-menu")};
 
-        m_fields->m_label = buildLabel(this);
+        m_fields->m_label = buildLabel(creatorInfoMenu);
 
         if (!m_fields->m_label) {
             return true;
@@ -33,7 +31,7 @@ class $modify(LevelInfoLayer) {
         std::string url = fmt::format("https://api.aredl.net/v2/api/aredl/levels/{}", level->m_levelID);
 
         m_fields->m_listener.spawn(
-            webReq.get(url), [this, scale, creatorInfoMenu](const web::WebResponse &res) {
+            webReq.get(url), [this, creatorInfoMenu](const web::WebResponse &res) {
                 int status{res.code()};
                 if (status == 200) {
                     auto data{res.json()};
@@ -47,28 +45,12 @@ class $modify(LevelInfoLayer) {
                     std::string verifier{
                         parsed["verifications"][0]["submitted_by"]["global_name"].asString().unwrapOr("-")
                     };
-                    m_fields->m_videoURL = parsed["verifications"][0]["video_url"].asString().unwrapOr("");
+                    std::string videoURL = parsed["verifications"][0]["video_url"].asString().unwrapOr("");
 
                     m_fields->m_label->setString(fmt::format("Verified: {}", verifier).c_str());
 
-                    if (Mod::get()->getSettingValue<bool>("enable-yt-button") && !m_fields->m_videoURL.empty()) {
-                        auto ytButton{
-                            CCMenuItemExt::createSpriteExtraWithFrameName(
-                                "gj_ytIcon_001.png", scale, [this](CCMenuItemSpriteExtra *btn) {
-                                    web::openLinkInBrowser(m_fields->m_videoURL);
-                                })
-                        };
-
-                        if (!ytButton) {
-                            log::warn("Could not create yt button");
-                            return;
-                        }
-
-                        ytButton->setPosition(
-                            m_fields->m_label->getPositionX() + m_fields->m_label->getContentWidth() * scale / 2 + 10,
-                            m_fields->m_label->getPositionY());
-
-                        creatorInfoMenu->addChild(ytButton);
+                    if (Mod::get()->getSettingValue<bool>("enable-yt-button") && !videoURL.empty()) {
+                        buildYTButton(creatorInfoMenu, m_fields->m_label, videoURL);
                     }
                 } else {
                     switch (status) {

@@ -2,15 +2,13 @@
 
 using namespace geode::prelude;
 
-CCLabelBMFont* buildLabel(CCNode* layer) {
-    const auto creatorInfoMenu{layer->getChildByID("creator-info-menu")};
-
-    if (!creatorInfoMenu) {
+CCLabelBMFont* buildLabel(CCNode* menu) {
+    if (!menu) {
         log::warn("Could not find creator-info-menu");
         return nullptr;
     }
 
-    const auto creatorName{creatorInfoMenu->getChildByID("creator-name")};
+    const auto creatorName{menu->getChildByID("creator-name")};
 
     if (!creatorName) {
         log::warn("Creator name label was not found");
@@ -34,7 +32,35 @@ CCLabelBMFont* buildLabel(CCNode* layer) {
     verifierName->setPosition(creatorName->getPositionX() + xoffset,
                               creatorName->getPositionY() - creatorName->getContentHeight() + yoffset);
 
-    creatorInfoMenu->addChild(verifierName);
+    menu->addChild(verifierName);
 
     return verifierName;
+}
+
+CCMenuItemSpriteExtra* buildYTButton(CCNode* menu, CCNode* label, const std::string &url) {
+    if (!menu || !label) {
+        return nullptr;
+    }
+
+    auto scale{Mod::get()->getSettingValue<float>("scale")};
+
+    auto ytButton{
+        CCMenuItemExt::createSpriteExtraWithFrameName(
+            "gj_ytIcon_001.png", scale, [url](CCMenuItemSpriteExtra *btn) {
+                web::openLinkInBrowser(url);
+            })
+    };
+
+    if (!ytButton) {
+        log::warn("Could not create yt button");
+        return nullptr;
+    }
+
+    ytButton->setID("ytbutton_spr");
+    ytButton->setPosition(
+        label->getPositionX() + label->getContentWidth() * scale / 2 + 10,
+        label->getPositionY());
+
+    menu->addChild(ytButton);
+    return ytButton;
 }

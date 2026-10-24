@@ -4,4 +4,5 @@
 
 using namespace geode::prelude;
 
-CCLabelBMFont* buildLabel(CCNode* layer);
+CCLabelBMFont* buildLabel(CCNode* menu);
+CCMenuItemSpriteExtra* buildYTButton(CCNode* menu, CCNode* label, const std::string &url);
