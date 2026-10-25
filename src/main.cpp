@@ -10,10 +10,12 @@ class $modify(LevelInfoLayer) {
     struct Fields {
         TaskHolder<web::WebResponse> m_listener;
         CCLabelBMFont *m_label{nullptr};
+        CCLabelBMFont *m_twoPlayerLabel{nullptr};
     };
 
     bool init(GJGameLevel *level, bool challenge) {
         if (!LevelInfoLayer::init(level, challenge)) return false;
+
         if (!Mod::get()->getSettingValue<bool>("enabled")) return true;
         if (!level->m_levelID) return true;
         if (m_level->m_demon.value() < 1) return true;
@@ -31,7 +33,7 @@ class $modify(LevelInfoLayer) {
         std::string url = fmt::format("https://api.aredl.net/v2/api/aredl/levels/{}", level->m_levelID);
 
         m_fields->m_listener.spawn(
-            webReq.get(url), [this, creatorInfoMenu](const web::WebResponse &res) {
+            webReq.get(url), [this, creatorInfoMenu, level](const web::WebResponse &res) {
                 int status{res.code()};
                 if (status == 200) {
                     auto data{res.json()};

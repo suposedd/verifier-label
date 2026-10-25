@@ -64,3 +64,44 @@ CCMenuItemSpriteExtra* buildYTButton(CCNode* menu, CCNode* label, const std::str
     menu->addChild(ytButton);
     return ytButton;
 }
+
+CCMenuItemSpriteExtra* build2PButton(CCNode* menu, CCNode* label) {
+    if (!menu || !label) {
+        return nullptr;
+    }
+
+    auto scale{Mod::get()->getSettingValue<float>("scale")};
+
+    auto btnText{CCLabelBMFont::create("2P", "bigFont.fnt")};
+
+    if (!btnText) {
+        log::warn("not able to create text for sum reason");
+        return nullptr;
+    }
+
+    auto twoPlrSprite{
+        CircleButtonSprite::create(btnText, CircleBaseColor::Green, CircleBaseSize::Tiny)
+    };
+
+    if (!twoPlrSprite) {
+        log::warn("not able to create sprite for sum reason");
+        return nullptr;
+    }
+
+    twoPlrSprite->setScale(scale + 0.1f);
+
+    auto twoPlrButton{CCMenuItemExt::createSpriteExtra(twoPlrSprite, nullptr)};
+
+    if (!twoPlrButton) {
+        return nullptr;
+    }
+
+    twoPlrButton->setID("twoplayerbutton_spr");
+
+    twoPlrButton->setPosition(
+        label->getPositionX() - label->getContentWidth() * scale / 2 - 10,
+        label->getPositionY());
+
+    menu->addChild(twoPlrButton);
+    return twoPlrButton;
+}
