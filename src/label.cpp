@@ -65,7 +65,7 @@ CCMenuItemSpriteExtra* buildYTButton(CCNode* menu, CCNode* label, const std::str
     return ytButton;
 }
 
-CCMenuItemSpriteExtra* build2PButton(CCNode* menu, CCNode* label) {
+CCMenuItemSpriteExtra* build2PButton(CCNode* menu, CCNode* label, const std::function<void()>& onClick) {
     if (!menu || !label) {
         return nullptr;
     }
@@ -90,7 +90,9 @@ CCMenuItemSpriteExtra* build2PButton(CCNode* menu, CCNode* label) {
 
     twoPlrSprite->setScale(scale + 0.1f);
 
-    auto twoPlrButton{CCMenuItemExt::createSpriteExtra(twoPlrSprite, nullptr)};
+    auto twoPlrButton{CCMenuItemExt::createSpriteExtra(twoPlrSprite, [onClick](CCMenuItemSpriteExtra *btn) {
+        onClick();
+    })};
 
     if (!twoPlrButton) {
         return nullptr;

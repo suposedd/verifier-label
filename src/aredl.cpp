@@ -1,12 +1,14 @@
 #include "aredl.hpp"
 
+#include <__msvc_ranges_to.hpp>
+
 #include "Geode/utils/web.hpp"
 
 using namespace geode::prelude;
 
-void fetch(TaskHolder<web::WebResponse> &holder, int id, bool isTwoPlayer,
-           std::function<void(VerificationResult)> onResult) {
-    std::string url = fmt::format("https://api.aredl.net/v2/api/aredl/levels/{}", id);
+void fetch(TaskHolder<web::WebResponse> &holder, const std::string& id, bool isTwoPlayer,
+           const std::function<void(VerificationResult)>& onResult) {
+    std::string url = fmt::format("https://api.aredl.net/v2/api/aredl/levels/{}", isTwoPlayer ? id + "_2p" : id);
 
     auto webReq = web::WebRequest();
 
@@ -25,7 +27,13 @@ void fetch(TaskHolder<web::WebResponse> &holder, int id, bool isTwoPlayer,
 
                     const auto &parsed = data.unwrap();
 
-                    result.verifier = parsed["verifications"][0]["submitted_by"]["global_name"].asString().unwrapOr("-");
+                    if (auto verifications = parsed["verifications"].asArray()) {
+                        for (const auto &verification: verifications.unwrap()) {
+                            result.verifiers.push_back(
+                                verification["submitted_by"]["global_name"].asString().unwrapOr("-"));
+                        }
+                    }
+
                     result.videoURL = parsed["verifications"][0]["video_url"].asString().unwrapOr("");
                     result.status = FetchStatus::ok;
                     break;

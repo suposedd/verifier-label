@@ -1,6 +1,7 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/LevelInfoLayer.hpp>
 #include <Geode/utils/web.hpp>
+#include <utility>
 
 #include "label.hpp"
 #include "aredl.hpp"
@@ -10,8 +11,16 @@ using namespace geode::prelude;
 class $modify(LevelInfoLayer) {
     struct Fields {
         TaskHolder<web::WebResponse> m_listener;
+        TaskHolder<web::WebResponse> m_twoPlayerListener;
+
+        VerificationResult m_solo;
+        VerificationResult m_twoPlayer;
+        bool m_showingTwoPlayer{false};
+
+        CCNode* m_menu{nullptr};
         CCLabelBMFont *m_label{nullptr};
-        CCLabelBMFont *m_twoPlayerLabel{nullptr};
+        CCMenuItemSpriteExtra *m_ytButton{nullptr};
+        CCMenuItemSpriteExtra *m_twoPlayerButton{nullptr};
     };
 
     bool init(GJGameLevel *level, bool challenge) {
@@ -30,72 +39,73 @@ class $modify(LevelInfoLayer) {
             return true;
         }
 
-        fetch(m_fields->m_listener, level->m_levelID, level->m_twoPlayerMode,
-            [this, creatorInfoMenu, level] (VerificationResult result) {
-                switch (result.status) {
-                    case FetchStatus::ok: {
-                        m_fields->m_label->setString(fmt::format("Verified: {}", result.verifier).c_str());
-                        if (Mod::get()->getSettingValue<bool>("enable-yt-button") && !result.videoURL.empty()) {
-                            buildYTButton(creatorInfoMenu, m_fields->m_label, result.videoURL);
-                        }
-                        break;
-                    }
-                    case FetchStatus::notFound: {
-                        m_fields->m_label->setVisible(false);
-                        break;
-                    }
-                    case FetchStatus::rateLimited: {
-                        m_fields->m_label->setString("Too many requests");
-                        break;
-                    }
-                    case FetchStatus::error: {
-                        m_fields->m_label->setString("AREDL connection issues");
-                        break;
-                    }
+        fetch(m_fields->m_listener, std::to_string(level->m_levelID), level->m_twoPlayerMode,
+            [this, level] (VerificationResult result) {
+                m_fields->m_solo = result;
+                refresh();
+
+                if (m_level->m_twoPlayerMode) {
+                    fetch(m_fields->m_twoPlayerListener, std::to_string(level->m_levelID), true,
+                        [this](VerificationResult result) {
+                            m_fields->m_twoPlayer = result;
+
+                            if (result.status != FetchStatus::ok) return;
+
+                            m_fields->m_twoPlayerButton = build2PButton(m_fields->m_menu, m_fields->m_label, [this] {
+                                m_fields->m_showingTwoPlayer = !m_fields->m_showingTwoPlayer;
+                                refresh();
+                            });
+                        });
                 }
             });
 
-        // auto webReq = web::WebRequest();
-        // std::string url = fmt::format("https://api.aredl.net/v2/api/aredl/levels/{}", level->m_levelID);
-        //
-        // m_fields->m_listener.spawn(
-        //     webReq.get(url), [this, creatorInfoMenu, level](const web::WebResponse &res) {
-        //         int status{res.code()};
-        //         if (status == 200) {
-        //             auto data{res.json()};
-        //             if (!data) {
-        //                 m_fields->m_label->setVisible(false);
-        //                 return;
-        //             }
-        //
-        //             const auto &parsed = data.unwrap();
-        //
-        //             std::string verifier{
-        //                 parsed["verifications"][0]["submitted_by"]["global_name"].asString().unwrapOr("-")
-        //             };
-        //             std::string videoURL = parsed["verifications"][0]["video_url"].asString().unwrapOr("");
-        //
-        //             m_fields->m_label->setString(fmt::format("Verified: {}", verifier).c_str());
-        //
-        //             if (Mod::get()->getSettingValue<bool>("enable-yt-button") && !videoURL.empty()) {
-        //                 buildYTButton(creatorInfoMenu, m_fields->m_label, videoURL);
-        //             }
-        //         } else {
-        //             switch (status) {
-        //                 case 404:
-        //                     m_fields->m_label->setVisible(false);
-        //                     break;
-        //                 case 429:
-        //                     m_fields->m_label->setString("Too many requests");
-        //                     break;
-        //                 default:
-        //                     m_fields->m_label->setString("Server connection issues");
-        //                     log::warn("unexpected serverside issue occurred ({})", status);
-        //                     break;
-        //             }
-        //         }
-        //     });
-
         return true;
+    }
+
+    void refresh() {
+        auto label{m_fields->m_label};
+        bool twoPlayer{m_fields->m_showingTwoPlayer};
+        const auto &result{twoPlayer ? m_fields->m_twoPlayer : m_fields->m_solo};
+
+        if (m_fields->m_ytButton) {
+            m_fields->m_ytButton->removeFromParent();
+            m_fields->m_ytButton = nullptr;
+        }
+
+        switch (result.status) {
+            case FetchStatus::ok: {
+                label->setVisible(true);
+
+                if (!twoPlayer) {
+                    label->setString(fmt::format("Verified: {}", result.verifiers[0]).c_str());
+                } else {
+                    label->setString(fmt::format("(2P) {}", fmt::join(result.verifiers, " & ")).c_str());
+                }
+
+                if (Mod::get()->getSettingValue<bool>("enable-yt-button") && !result.videoURL.empty()) {
+                    buildYTButton(m_fields->m_menu, label, result.videoURL);
+                }
+                break;
+            }
+            case FetchStatus::notFound: {
+                label->setVisible(false);
+                break;
+            }
+            case FetchStatus::rateLimited: {
+                label->setVisible(true);
+                label->setString("Too many requests");
+                break;
+            }
+            case FetchStatus::error: {
+                label->setVisible(true);
+                m_fields->m_label->setString("AREDL connection issues");
+                break;
+            }
+        }
+
+        if (m_fields->m_twoPlayerButton) {
+            auto scale{Mod::get()->getSettingValue<float>("scale")};
+            m_fields->m_twoPlayerButton->setPositionX(label->getPositionX() - label->getContentWidth() * scale / 2 - 10);
+        }
     }
 };
