@@ -3,6 +3,7 @@
 #include <Geode/utils/web.hpp>
 
 #include "label.hpp"
+#include "aredl.hpp"
 
 using namespace geode::prelude;
 
@@ -29,46 +30,71 @@ class $modify(LevelInfoLayer) {
             return true;
         }
 
-        auto webReq = web::WebRequest();
-        std::string url = fmt::format("https://api.aredl.net/v2/api/aredl/levels/{}", level->m_levelID);
-
-        m_fields->m_listener.spawn(
-            webReq.get(url), [this, creatorInfoMenu, level](const web::WebResponse &res) {
-                int status{res.code()};
-                if (status == 200) {
-                    auto data{res.json()};
-                    if (!data) {
+        fetch(m_fields->m_listener, level->m_levelID, level->m_twoPlayerMode,
+            [this, creatorInfoMenu, level] (VerificationResult result) {
+                switch (result.status) {
+                    case FetchStatus::ok: {
+                        m_fields->m_label->setString(fmt::format("Verified: {}", result.verifier).c_str());
+                        if (Mod::get()->getSettingValue<bool>("enable-yt-button") && !result.videoURL.empty()) {
+                            buildYTButton(creatorInfoMenu, m_fields->m_label, result.videoURL);
+                        }
+                        break;
+                    }
+                    case FetchStatus::notFound: {
                         m_fields->m_label->setVisible(false);
-                        return;
+                        break;
                     }
-
-                    const auto &parsed = data.unwrap();
-
-                    std::string verifier{
-                        parsed["verifications"][0]["submitted_by"]["global_name"].asString().unwrapOr("-")
-                    };
-                    std::string videoURL = parsed["verifications"][0]["video_url"].asString().unwrapOr("");
-
-                    m_fields->m_label->setString(fmt::format("Verified: {}", verifier).c_str());
-
-                    if (Mod::get()->getSettingValue<bool>("enable-yt-button") && !videoURL.empty()) {
-                        buildYTButton(creatorInfoMenu, m_fields->m_label, videoURL);
+                    case FetchStatus::rateLimited: {
+                        m_fields->m_label->setString("Too many requests");
+                        break;
                     }
-                } else {
-                    switch (status) {
-                        case 404:
-                            m_fields->m_label->setVisible(false);
-                            break;
-                        case 429:
-                            m_fields->m_label->setString("Too many requests");
-                            break;
-                        default:
-                            m_fields->m_label->setString("Server connection issues");
-                            log::warn("unexpected serverside issue occurred ({})", status);
-                            break;
+                    case FetchStatus::error: {
+                        m_fields->m_label->setString("AREDL connection issues");
+                        break;
                     }
                 }
             });
+
+        // auto webReq = web::WebRequest();
+        // std::string url = fmt::format("https://api.aredl.net/v2/api/aredl/levels/{}", level->m_levelID);
+        //
+        // m_fields->m_listener.spawn(
+        //     webReq.get(url), [this, creatorInfoMenu, level](const web::WebResponse &res) {
+        //         int status{res.code()};
+        //         if (status == 200) {
+        //             auto data{res.json()};
+        //             if (!data) {
+        //                 m_fields->m_label->setVisible(false);
+        //                 return;
+        //             }
+        //
+        //             const auto &parsed = data.unwrap();
+        //
+        //             std::string verifier{
+        //                 parsed["verifications"][0]["submitted_by"]["global_name"].asString().unwrapOr("-")
+        //             };
+        //             std::string videoURL = parsed["verifications"][0]["video_url"].asString().unwrapOr("");
+        //
+        //             m_fields->m_label->setString(fmt::format("Verified: {}", verifier).c_str());
+        //
+        //             if (Mod::get()->getSettingValue<bool>("enable-yt-button") && !videoURL.empty()) {
+        //                 buildYTButton(creatorInfoMenu, m_fields->m_label, videoURL);
+        //             }
+        //         } else {
+        //             switch (status) {
+        //                 case 404:
+        //                     m_fields->m_label->setVisible(false);
+        //                     break;
+        //                 case 429:
+        //                     m_fields->m_label->setString("Too many requests");
+        //                     break;
+        //                 default:
+        //                     m_fields->m_label->setString("Server connection issues");
+        //                     log::warn("unexpected serverside issue occurred ({})", status);
+        //                     break;
+        //             }
+        //         }
+        //     });
 
         return true;
     }

@@ -15,6 +15,9 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
 add_library(${PROJECT_NAME} SHARED ${SOURCES}
         src/label.cpp
         src/label.hpp
+        src/aredl.cpp
+        src/aredl.hpp
+        src/aredl.cpp
 )
 
 if (NOT DEFINED ENV{GEODE_SDK})
