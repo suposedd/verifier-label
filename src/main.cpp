@@ -125,6 +125,10 @@ class $modify(LevelInfoLayer) {
         }
 
         if (m_fields->m_twoPlayerButton) {
+            if (auto text{typeinfo_cast<CCLabelBMFont*>(m_fields->m_twoPlayerButton->getChildByIDRecursive("mode-text"))}) {
+                text->setString(twoPlayer ? "1P" : "2P");
+            }
+
             m_fields->m_twoPlayerButton->setPositionX(label->getPositionX() - halfWidth - 10);
         }
     }

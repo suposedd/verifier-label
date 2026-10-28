@@ -71,13 +71,15 @@ CCMenuItemSpriteExtra* build2PButton(CCNode* menu, CCNode* label, const std::fun
     }
 
     auto scale{Mod::get()->getSettingValue<float>("scale")};
-
+    
     auto btnText{CCLabelBMFont::create("2P", "bigFont.fnt")};
 
     if (!btnText) {
         log::warn("not able to create text for sum reason");
         return nullptr;
     }
+
+    btnText->setID("mode-text");
 
     auto twoPlrSprite{
         CircleButtonSprite::create(btnText, CircleBaseColor::Green, CircleBaseSize::Tiny)
