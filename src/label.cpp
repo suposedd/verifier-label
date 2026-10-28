@@ -37,7 +37,7 @@ CCLabelBMFont* buildLabel(CCNode* menu) {
     return verifierName;
 }
 
-CCMenuItemSpriteExtra* buildYTButton(CCNode* menu, CCNode* label, const std::string &url) {
+CCMenuItemSpriteExtra* buildYTButton(CCNode* menu, CCNode* label, const std::function<void()>& onClick) {
     if (!menu || !label) {
         return nullptr;
     }
@@ -46,8 +46,8 @@ CCMenuItemSpriteExtra* buildYTButton(CCNode* menu, CCNode* label, const std::str
 
     auto ytButton{
         CCMenuItemExt::createSpriteExtraWithFrameName(
-            "gj_ytIcon_001.png", scale, [url](CCMenuItemSpriteExtra *btn) {
-                web::openLinkInBrowser(url);
+            "gj_ytIcon_001.png", scale, [onClick](CCMenuItemSpriteExtra *btn) {
+                onClick();
             })
     };
 

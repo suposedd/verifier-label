@@ -23,6 +23,10 @@ class $modify(LevelInfoLayer) {
         CCMenuItemSpriteExtra *m_twoPlayerButton{nullptr};
     };
 
+    const VerificationResult &currentResult() {
+        return m_fields->m_showingTwoPlayer ? m_fields->m_twoPlayer : m_fields->m_solo;
+    }
+
     bool init(GJGameLevel *level, bool challenge) {
         if (!LevelInfoLayer::init(level, challenge)) return false;
 
@@ -42,6 +46,16 @@ class $modify(LevelInfoLayer) {
 
         if (!m_fields->m_menu) {
             return true;
+        }
+
+        if (Mod::get()->getSettingValue<bool>("enable-yt-button")) {
+            m_fields->m_ytButton = buildYTButton(m_fields->m_menu, m_fields->m_label, [this] {
+               web::openLinkInBrowser(currentResult().videoURL);
+            });
+
+            if (m_fields->m_ytButton) {
+                m_fields->m_ytButton->setVisible(false);
+            }
         }
 
         fetch(m_fields->m_listener, std::to_string(level->m_levelID), false,
@@ -70,12 +84,8 @@ class $modify(LevelInfoLayer) {
     void refresh() {
         auto label{m_fields->m_label};
         bool twoPlayer{m_fields->m_showingTwoPlayer};
-        const auto &result{twoPlayer ? m_fields->m_twoPlayer : m_fields->m_solo};
-
-        if (m_fields->m_ytButton) {
-            m_fields->m_ytButton->removeFromParent();
-            m_fields->m_ytButton = nullptr;
-        }
+        const auto &result{currentResult()};
+        bool showYT{false};
 
         switch (result.status) {
             case FetchStatus::ok: {
@@ -87,9 +97,7 @@ class $modify(LevelInfoLayer) {
                     label->setString(fmt::format("(2P) {}", fmt::join(result.verifiers, " & ")).c_str());
                 }
 
-                if (Mod::get()->getSettingValue<bool>("enable-yt-button") && !result.videoURL.empty()) {
-                    m_fields->m_ytButton = buildYTButton(m_fields->m_menu, label, result.videoURL);
-                }
+                showYT = !result.videoURL.empty();
                 break;
             }
             case FetchStatus::notFound: {
@@ -108,9 +116,16 @@ class $modify(LevelInfoLayer) {
             }
         }
 
+        auto scale{Mod::get()->getSettingValue<float>("scale")};
+        float halfWidth{label->getContentWidth() * scale / 2};
+
+        if (m_fields->m_ytButton) {
+            m_fields->m_ytButton->setVisible(showYT);
+            m_fields->m_ytButton->setPositionX(label->getPositionX() + halfWidth + 10);
+        }
+
         if (m_fields->m_twoPlayerButton) {
-            auto scale{Mod::get()->getSettingValue<float>("scale")};
-            m_fields->m_twoPlayerButton->setPositionX(label->getPositionX() - label->getContentWidth() * scale / 2 - 10);
+            m_fields->m_twoPlayerButton->setPositionX(label->getPositionX() - halfWidth - 10);
         }
     }
 };
