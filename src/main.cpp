@@ -34,12 +34,17 @@ class $modify(LevelInfoLayer) {
         auto creatorInfoMenu{this->getChildByID("creator-info-menu")};
 
         m_fields->m_label = buildLabel(creatorInfoMenu);
+        m_fields->m_menu = creatorInfoMenu;
 
         if (!m_fields->m_label) {
             return true;
         }
 
-        fetch(m_fields->m_listener, std::to_string(level->m_levelID), level->m_twoPlayerMode,
+        if (!m_fields->m_menu) {
+            return true;
+        }
+
+        fetch(m_fields->m_listener, std::to_string(level->m_levelID), false,
             [this, level] (VerificationResult result) {
                 m_fields->m_solo = result;
                 refresh();
@@ -83,7 +88,7 @@ class $modify(LevelInfoLayer) {
                 }
 
                 if (Mod::get()->getSettingValue<bool>("enable-yt-button") && !result.videoURL.empty()) {
-                    buildYTButton(m_fields->m_menu, label, result.videoURL);
+                    m_fields->m_ytButton = buildYTButton(m_fields->m_menu, label, result.videoURL);
                 }
                 break;
             }

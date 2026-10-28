@@ -1,7 +1,4 @@
 #include "aredl.hpp"
-
-#include <__msvc_ranges_to.hpp>
-
 #include "Geode/utils/web.hpp"
 
 using namespace geode::prelude;
@@ -22,7 +19,7 @@ void fetch(TaskHolder<web::WebResponse> &holder, const std::string& id, bool isT
                     auto data{res.json()};
                     if (!data) {
                         log::warn("could not parse aredl response");
-                        return;
+                        break;
                     }
 
                     const auto &parsed = data.unwrap();
