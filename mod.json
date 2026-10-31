@@ -9,6 +9,10 @@
 	"id": "suposed.verifier-label",
 	"name": "Verifier Label",
 	"version": "v1.0.0",
+	"links": {
+		"source": "https://github.com/suposedd/verifier-label"
+	},
+	"tags": ["online", "enhancement"],
 	"settings":{
 		"mod-title": {
 			"type": "title",
@@ -58,7 +62,7 @@
 		}
 	},
 	"developer": "suposed",
-	"description": "",
+	"description": "Shows who verified a level",
 	"dependencies": {
 		"geode.node-ids": ">=v1.23.3"
 	}
