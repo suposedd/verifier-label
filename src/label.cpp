@@ -32,7 +32,7 @@ CCLabelBMFont* buildLabel(CCNode* menu, bool isLegacy) {
     auto yoffset{Mod::get()->getSettingValue<float>("y-offset")};
     auto xoffset{Mod::get()->getSettingValue<float>("x-offset")};
 
-    verifierName->setID("verifier-name_spr");
+    verifierName->setID("verifier-name_spr"_spr);
     verifierName->setScale(isLegacy && Mod::get()->getSettingValue<bool>("white-legacy-label") ? scale * 0.8f : scale);
 
     verifierName->setPosition(creatorName->getPositionX() + xoffset,
@@ -62,7 +62,7 @@ CCMenuItemSpriteExtra* buildYTButton(CCNode* menu, CCNode* label, const std::fun
         return nullptr;
     }
 
-    ytButton->setID("ytbutton_spr");
+    ytButton->setID("ytbutton"_spr);
     ytButton->setPosition(
         label->getPositionX() + label->getContentWidth() * scale / 2 + 10,
         label->getPositionY());
@@ -106,7 +106,7 @@ CCMenuItemSpriteExtra* build2PButton(CCNode* menu, CCNode* label, const std::fun
         return nullptr;
     }
 
-    twoPlrButton->setID("twoplayerbutton_spr");
+    twoPlrButton->setID("twoplayerbutton"_spr);
 
     twoPlrButton->setPosition(
         label->getPositionX() - label->getScaledContentWidth() / 2 - 10,

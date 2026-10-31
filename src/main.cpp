@@ -1,7 +1,6 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/LevelInfoLayer.hpp>
 #include <Geode/utils/web.hpp>
-#include <utility>
 
 #include "label.hpp"
 #include "aredl.hpp"
