@@ -37,7 +37,7 @@ class $modify(LevelInfoLayer) {
 
         auto creatorInfoMenu{this->getChildByID("creator-info-menu")};
 
-        m_fields->m_label = buildLabel(creatorInfoMenu);
+        m_fields->m_label = buildLabel(creatorInfoMenu, m_level->m_demonDifficulty == 5);
         m_fields->m_menu = creatorInfoMenu;
 
         if (!m_fields->m_label) {

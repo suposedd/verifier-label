@@ -2,7 +2,7 @@
 
 using namespace geode::prelude;
 
-CCLabelBMFont* buildLabel(CCNode* menu) {
+CCLabelBMFont* buildLabel(CCNode* menu, bool isLegacy) {
     if (!menu) {
         log::warn("Could not find creator-info-menu");
         return nullptr;
@@ -15,7 +15,13 @@ CCLabelBMFont* buildLabel(CCNode* menu) {
         return nullptr;
     }
 
-    const auto verifierName{CCLabelBMFont::create(". . .", "goldFont.fnt")};
+    CCLabelBMFont* verifierName{};
+
+    if (isLegacy && Mod::get()->getSettingValue<bool>("white-legacy-label")) {
+        verifierName = CCLabelBMFont::create(". . .", "bigFont.fnt");
+    } else {
+        verifierName = CCLabelBMFont::create(". . .", "goldFont.fnt");
+    }
 
     if (!verifierName) {
         log::warn("Failed to create the verifier label");
@@ -27,7 +33,7 @@ CCLabelBMFont* buildLabel(CCNode* menu) {
     auto xoffset{Mod::get()->getSettingValue<float>("x-offset")};
 
     verifierName->setID("verifier-name_spr");
-    verifierName->setScale(scale);
+    verifierName->setScale(isLegacy && Mod::get()->getSettingValue<bool>("white-legacy-label") ? scale * 0.8f : scale);
 
     verifierName->setPosition(creatorName->getPositionX() + xoffset,
                               creatorName->getPositionY() - creatorName->getContentHeight() + yoffset);

@@ -49,6 +49,12 @@
 			"name": "Enable Youtube Button",
 			"description": "Toggle the youtube button's visibility",
 			"default": true
+		},
+		"white-legacy-label": {
+			"type": "bool",
+			"name": "White Legacy Label",
+			"description": "Toggle whether the label is white instead of gold on former Extreme Demons",
+			"default": true
 		}
 	},
 	"developer": "suposed",

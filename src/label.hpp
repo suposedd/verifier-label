@@ -4,6 +4,6 @@
 
 using namespace geode::prelude;
 
-CCLabelBMFont* buildLabel(CCNode* menu);
+CCLabelBMFont* buildLabel(CCNode* menu, bool isLegacy);
 CCMenuItemSpriteExtra* buildYTButton(CCNode* menu, CCNode* label, const std::function<void()>& onClick);
 CCMenuItemSpriteExtra* build2PButton(CCNode* menu, CCNode* label, const std::function<void()>& onClick);
