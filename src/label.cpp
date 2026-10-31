@@ -109,7 +109,7 @@ CCMenuItemSpriteExtra* build2PButton(CCNode* menu, CCNode* label, const std::fun
     twoPlrButton->setID("twoplayerbutton_spr");
 
     twoPlrButton->setPosition(
-        label->getPositionX() - label->getContentWidth() * scale / 2 - 10,
+        label->getPositionX() - label->getScaledContentWidth() / 2 - 10,
         label->getPositionY());
 
     menu->addChild(twoPlrButton);

@@ -117,7 +117,7 @@ class $modify(LevelInfoLayer) {
         }
 
         auto scale{Mod::get()->getSettingValue<float>("scale")};
-        float halfWidth{label->getContentWidth() * scale / 2};
+        float halfWidth{label->getScaledContentWidth() / 2};
 
         if (m_fields->m_ytButton) {
             m_fields->m_ytButton->setVisible(showYT);
