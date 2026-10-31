@@ -3,8 +3,8 @@
 
 using namespace geode::prelude;
 
-void fetch(TaskHolder<web::WebResponse> &holder, const std::string& id, bool isTwoPlayer,
-           const std::function<void(VerificationResult)>& onResult) {
+void fetch(TaskHolder<web::WebResponse> &holder, const std::string &id, bool isTwoPlayer,
+           const std::function<void(VerificationResult)> &onResult) {
     std::string url = fmt::format("https://api.aredl.net/v2/api/aredl/levels/{}", isTwoPlayer ? id + "_2p" : id);
 
     auto webReq = web::WebRequest();
@@ -31,8 +31,10 @@ void fetch(TaskHolder<web::WebResponse> &holder, const std::string& id, bool isT
                         }
                     }
 
-                    result.videoURL = parsed["verifications"][0]["video_url"].asString().unwrapOr("");
-                    result.status = FetchStatus::ok;
+                    if (!result.verifiers.empty()) {
+                        result.videoURL = parsed["verifications"][0]["video_url"].asString().unwrapOr("");
+                        result.status = FetchStatus::ok;
+                    }
                     break;
                 }
                 case 404: {
