@@ -32,7 +32,7 @@ CCLabelBMFont* buildLabel(CCNode* menu, bool isLegacy) {
     auto yoffset{Mod::get()->getSettingValue<float>("y-offset")};
     auto xoffset{Mod::get()->getSettingValue<float>("x-offset")};
 
-    verifierName->setID("verifier-name_spr"_spr);
+    verifierName->setID("verifier-name"_spr);
     verifierName->setScale(isLegacy && Mod::get()->getSettingValue<bool>("white-legacy-label") ? scale * 0.8f : scale);
 
     verifierName->setPosition(creatorName->getPositionX() + xoffset,
