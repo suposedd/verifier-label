@@ -85,7 +85,7 @@ CCMenuItemSpriteExtra* build2PButton(CCNode* menu, CCNode* label, const std::fun
         return nullptr;
     }
 
-    btnText->setID("mode-text");
+    btnText->setID("mode-text"_spr);
 
     auto twoPlrSprite{
         CircleButtonSprite::create(btnText, CircleBaseColor::Green, CircleBaseSize::Tiny)

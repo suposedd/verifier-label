@@ -69,6 +69,12 @@ class $modify(LevelInfoLayer) {
 
                             if (result.status != FetchStatus::ok) return;
 
+                            if (m_fields->m_solo.status == FetchStatus::notFound) {
+                                m_fields->m_showingTwoPlayer = true;
+                                refresh();
+                                return;
+                            }
+
                             m_fields->m_twoPlayerButton = build2PButton(m_fields->m_menu, m_fields->m_label, [this] {
                                 m_fields->m_showingTwoPlayer = !m_fields->m_showingTwoPlayer;
                                 refresh();
@@ -93,7 +99,13 @@ class $modify(LevelInfoLayer) {
                 if (!twoPlayer) {
                     label->setString(fmt::format("Verified: {}", result.verifiers[0]).c_str());
                 } else {
-                    label->setString(fmt::format("(2P) {}", fmt::join(result.verifiers, " & ")).c_str());
+                    if (result.verifiers.size() > 2) {
+                        label->setString(fmt::format("(2P) {} +{}",
+                            result.verifiers[0],
+                            result.verifiers.size() - 1).c_str());
+                    } else {
+                        label->setString(fmt::format("(2P) {}", fmt::join(result.verifiers, " & ")).c_str());
+                    }
                 }
 
                 showYT = !result.videoURL.empty();
@@ -123,7 +135,7 @@ class $modify(LevelInfoLayer) {
         }
 
         if (m_fields->m_twoPlayerButton) {
-            if (auto text{typeinfo_cast<CCLabelBMFont*>(m_fields->m_twoPlayerButton->getChildByIDRecursive("mode-text"))}) {
+            if (auto text{typeinfo_cast<CCLabelBMFont*>(m_fields->m_twoPlayerButton->getChildByIDRecursive("mode-text"_spr))}) {
                 text->setString(twoPlayer ? "1P" : "2P");
             }
 
