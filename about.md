@@ -4,6 +4,7 @@ Ever stumbled upon a level, and wondered -
 "Who could've verified this?"
 
 This mod shows who verified the level, right under the creator's name.
+**(ONLY ON EXTREME DEMONS AND FORMER EXTREMES)**
 
 ## Features
 
@@ -13,4 +14,4 @@ This mod shows who verified the level, right under the creator's name.
 - **Legacy status**: if a level was ever on the AREDL, but got downgraded to an Insane Demon, the label will appear White instead of Gold. (TOGGLEABLE IN MOD'S SETTINGS)
 
 ## Credits
-*All verification data comes from* [AREDL](https://aredl.net) (All Rated Extreme Demon List).
+*Verification data comes from* [AREDL](https://aredl.net) (All Rated Extreme Demon List) and more to come.
