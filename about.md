@@ -14,4 +14,4 @@ This mod shows who verified the level, right under the creator's name.
 - **Legacy status**: if a level was ever on the AREDL, but got downgraded to an Insane Demon, the label will appear White instead of Gold. (TOGGLEABLE IN MOD'S SETTINGS)
 
 ## Credits
-*Verification data comes from* [AREDL](https://aredl.net) (All Rated Extreme Demon List) and more to come.
+*Verification data comes from* [AREDL](https://aredl.net) (All Rated Extreme Demon List).

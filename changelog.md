@@ -1,3 +1,6 @@
+# 1.1.0
+- Added platformer support
+
 # 1.0.2
 - Fixed long labels when a level has more than 2 verifiers
 - Fixed the label not showing on levels without a solo verification
