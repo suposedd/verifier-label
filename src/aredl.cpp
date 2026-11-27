@@ -4,8 +4,12 @@
 using namespace geode::prelude;
 
 void fetch(TaskHolder<web::WebResponse> &holder, const std::string &id, bool isTwoPlayer,
-           const std::function<void(VerificationResult)> &onResult) {
-    std::string url = fmt::format("https://api.aredl.net/v2/api/aredl/levels/{}", isTwoPlayer ? id + "_2p" : id);
+            bool isPlatformer,
+            const std::function<void(VerificationResult)> &onResult) {
+
+    std::string url{fmt::format("https://api.aredl.net/v2/api/{}/levels/{}",
+        isPlatformer ? "arepl" : "aredl",
+        isTwoPlayer ? id + "_2p" : id)};
 
     auto webReq = web::WebRequest();
 

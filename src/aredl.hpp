@@ -13,4 +13,5 @@ struct VerificationResult {
 };
 
 void fetch(TaskHolder<web::WebResponse> &holder, const std::string& id, bool isTwoPlayer,
-           const std::function<void(VerificationResult)>& onResult);
+            bool isPlatformer,
+            const std::function<void(VerificationResult)>& onResult);

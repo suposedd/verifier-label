@@ -57,13 +57,13 @@ class $modify(LevelInfoLayer) {
             }
         }
 
-        fetch(m_fields->m_listener, std::to_string(level->m_levelID), false,
+        fetch(m_fields->m_listener, std::to_string(level->m_levelID), false, level->isPlatformer(),
             [this, level] (VerificationResult result) {
                 m_fields->m_solo = result;
                 refresh();
 
                 if (m_level->m_twoPlayerMode) {
-                    fetch(m_fields->m_twoPlayerListener, std::to_string(level->m_levelID), true,
+                    fetch(m_fields->m_twoPlayerListener, std::to_string(level->m_levelID), true, level->isPlatformer(),
                         [this](VerificationResult result) {
                             m_fields->m_twoPlayer = result;
 
