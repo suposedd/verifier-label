@@ -1,5 +1,5 @@
 # 1.2.0
-- Added a full list of verifiers when clicking on the label on levels with 2 verifiers
+- Added a full list of verifiers when clicking on the label on levels with more than 2 verifiers
 - Code cleanup
 
 # 1.1.0
