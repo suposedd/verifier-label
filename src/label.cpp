@@ -2,7 +2,7 @@
 
 using namespace geode::prelude;
 
-CCLabelBMFont* buildLabel(CCNode* menu, bool isLegacy) {
+CCMenuItemSpriteExtra *buildLabel(CCNode *menu, bool isLegacy, const std::function<void()> &onClick) {
     if (!menu) {
         log::warn("Could not find creator-info-menu");
         return nullptr;
@@ -15,7 +15,7 @@ CCLabelBMFont* buildLabel(CCNode* menu, bool isLegacy) {
         return nullptr;
     }
 
-    CCLabelBMFont* verifierName{};
+    CCLabelBMFont* verifierName;
 
     if (isLegacy && Mod::get()->getSettingValue<bool>("white-legacy-label")) {
         verifierName = CCLabelBMFont::create(". . .", "bigFont.fnt");
@@ -32,15 +32,21 @@ CCLabelBMFont* buildLabel(CCNode* menu, bool isLegacy) {
     auto yoffset{Mod::get()->getSettingValue<float>("y-offset")};
     auto xoffset{Mod::get()->getSettingValue<float>("x-offset")};
 
-    verifierName->setID("verifier-name"_spr);
     verifierName->setScale(isLegacy && Mod::get()->getSettingValue<bool>("white-legacy-label") ? scale * 0.8f : scale);
 
-    verifierName->setPosition(creatorName->getPositionX() + xoffset,
+    auto button{CCMenuItemExt::createSpriteExtra(verifierName, [onClick](CCMenuItemSpriteExtra*) {
+        onClick();
+    })};
+
+    button->setID("verifier-name"_spr);
+
+    button->setPosition(creatorName->getPositionX() + xoffset,
                               creatorName->getPositionY() - creatorName->getContentHeight() + yoffset);
+    button->setEnabled(false);
 
-    menu->addChild(verifierName);
+    menu->addChild(button);
 
-    return verifierName;
+    return button;
 }
 
 CCMenuItemSpriteExtra* buildYTButton(CCNode* menu, CCNode* label, const std::function<void()>& onClick) {

@@ -17,6 +17,7 @@ class $modify(LevelInfoLayer) {
         bool m_showingTwoPlayer{false};
 
         CCNode* m_menu{nullptr};
+        CCMenuItemSpriteExtra *m_button{nullptr};
         CCLabelBMFont *m_label{nullptr};
         CCMenuItemSpriteExtra *m_ytButton{nullptr};
         CCMenuItemSpriteExtra *m_twoPlayerButton{nullptr};
@@ -36,7 +37,17 @@ class $modify(LevelInfoLayer) {
 
         auto creatorInfoMenu{this->getChildByID("creator-info-menu")};
 
-        m_fields->m_label = buildLabel(creatorInfoMenu, m_level->m_demonDifficulty == 5);
+        m_fields->m_button = buildLabel(creatorInfoMenu, m_level->m_demonDifficulty == 5, [this] {
+            FLAlertLayer::create("Verifiers",
+                fmt::format("{}", fmt::join(currentResult().verifiers, "\n")),
+                "CLOSE")->show();
+        });
+
+        if (!m_fields->m_button) {
+            return true;
+        }
+
+        m_fields->m_label = typeinfo_cast<CCLabelBMFont *>(m_fields->m_button->getNormalImage());
         m_fields->m_menu = creatorInfoMenu;
 
         if (!m_fields->m_label) {
@@ -48,7 +59,7 @@ class $modify(LevelInfoLayer) {
         }
 
         if (Mod::get()->getSettingValue<bool>("enable-yt-button")) {
-            m_fields->m_ytButton = buildYTButton(m_fields->m_menu, m_fields->m_label, [this] {
+            m_fields->m_ytButton = buildYTButton(m_fields->m_menu, m_fields->m_button, [this] {
                web::openLinkInBrowser(currentResult().videoURL);
             });
 
@@ -75,7 +86,7 @@ class $modify(LevelInfoLayer) {
                                 return;
                             }
 
-                            m_fields->m_twoPlayerButton = build2PButton(m_fields->m_menu, m_fields->m_label, [this] {
+                            m_fields->m_twoPlayerButton = build2PButton(m_fields->m_menu, m_fields->m_button, [this] {
                                 m_fields->m_showingTwoPlayer = !m_fields->m_showingTwoPlayer;
                                 refresh();
                             });
@@ -88,6 +99,7 @@ class $modify(LevelInfoLayer) {
 
     void refresh() {
         auto label{m_fields->m_label};
+        auto button{m_fields->m_button};
         bool twoPlayer{m_fields->m_showingTwoPlayer};
         const auto &result{currentResult()};
         bool showYT{false};
@@ -127,11 +139,15 @@ class $modify(LevelInfoLayer) {
             }
         }
 
-        float halfWidth{label->getScaledContentWidth() / 2};
+        button->setContentSize(label->getScaledContentSize());
+        label->setPosition(button->getContentSize() / 2);
+        button->setEnabled(twoPlayer && result.status == FetchStatus::ok && result.verifiers.size() > 2);
+
+        float halfWidth{button->getScaledContentWidth() / 2};
 
         if (m_fields->m_ytButton) {
             m_fields->m_ytButton->setVisible(showYT);
-            m_fields->m_ytButton->setPositionX(label->getPositionX() + halfWidth + 10);
+            m_fields->m_ytButton->setPositionX(button->getPositionX() + halfWidth + 10);
         }
 
         if (m_fields->m_twoPlayerButton) {
@@ -139,7 +155,7 @@ class $modify(LevelInfoLayer) {
                 text->setString(twoPlayer ? "1P" : "2P");
             }
 
-            m_fields->m_twoPlayerButton->setPositionX(label->getPositionX() - halfWidth - 10);
+            m_fields->m_twoPlayerButton->setPositionX(button->getPositionX() - halfWidth - 10);
         }
     }
 };
