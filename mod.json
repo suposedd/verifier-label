@@ -8,7 +8,7 @@
 	},
 	"id": "suposed.verifier-label",
 	"name": "Verifier Label",
-	"version": "v1.1.0",
+	"version": "v1.2.0",
 	"links": {
 		"source": "https://github.com/suposedd/verifier-label"
 	},
@@ -64,6 +64,6 @@
 	"developer": "suposed",
 	"description": "Shows who verified a level",
 	"dependencies": {
-		"geode.node-ids": ">=v1.24.0-beta.1"
+		"geode.node-ids": ">=v1.24.0"
 	}
 }

@@ -134,7 +134,7 @@ class $modify(LevelInfoLayer) {
             }
             case FetchStatus::error: {
                 label->setVisible(true);
-                m_fields->m_label->setString("AREDL connection issues");
+                label->setString("AREDL connection issues");
                 break;
             }
         }

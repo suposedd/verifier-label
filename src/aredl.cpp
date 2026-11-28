@@ -23,6 +23,7 @@ void fetch(TaskHolder<web::WebResponse> &holder, const std::string &id, bool isT
                     auto data{res.json()};
                     if (!data) {
                         log::warn("could not parse aredl response");
+                        result.status = FetchStatus::notFound;
                         break;
                     }
 
